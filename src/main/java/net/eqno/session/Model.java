@@ -1,14 +1,13 @@
 package net.eqno.session;
 
-import java.time.ZonedDateTime;
 import java.util.Map;
-
 import com.fasterxml.jackson.annotation.JsonView;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import org.hibernate.validator.constraints.Length;
-import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -17,26 +16,32 @@ public class Model {
     @Id
     @JsonView(View.Default.class)
     @NotNull
+    @NotEmpty
     @Length(min = 24, max = 24)
-    //@Pattern(regexp = "^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,6}$")
+    @Pattern(regexp = "^[a-z0-9]+$")
     public String id;
 
     @JsonView(View.Default.class)
     @NotNull
-    @Length(min = 32, max = 32)
-    //@Pattern(regexp = "^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,6}$")
+    @NotEmpty
+    @Length(min = 36, max = 36)
+    @Pattern(regexp = "^[a-z0-9-]+$")
     public String csrfToken;
 
     @NotNull
+    @NotEmpty
     @Length(min = 32, max = 32)
-    //@Pattern(regexp = "^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,6}$")
+    @Pattern(regexp = "^[a-z0-9]+$")
     public String httpHeaderHash;
 
     @JsonView(View.Default.class)
+    @Size(max = 32)
     public Map<String, String> values;
 
     @JsonView(View.Default.class)
     @DateTimeFormat
+    @NotNull
+    @NotEmpty
     public String lastUpdate;
 
     public String getId() {

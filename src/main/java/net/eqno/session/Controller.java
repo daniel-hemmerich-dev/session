@@ -2,8 +2,11 @@ package net.eqno.session;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import jakarta.security.auth.message.AuthException;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import java.security.NoSuchAlgorithmException;
@@ -15,6 +18,7 @@ import java.util.Optional;
  * The session controller containing requests for all CRUD operations
  */
 @RestController
+@Validated
 public class Controller extends API {
     @Autowired
     Repository repository;
@@ -27,16 +31,16 @@ public class Controller extends API {
      */
     @PostMapping("/")
     @JsonView(View.Default.class)
-    public Model create(
-            @RequestHeader Map<String, String> headers
+    public @Valid Model create(
+        @RequestHeader @Valid Map<@NotEmpty String, @NotEmpty String> headers
     ) throws NoSuchAlgorithmException, AuthException {
 
         this.authenticate(headers.getOrDefault("api-key", ""));
 
         Model session = new Model();
-        session.setCsrfToken(Util.generateCSRFToken());
+        session.setCsrfToken(CSRF.generateToken());
         session.setHttpHeaderHash(
-            Util.generateHTTPHeaderHash(
+            HTTPHeader.generateHash(
                 headers.get("host"),
                 headers.get("connection"),
                 headers.get("pragma"),
@@ -47,7 +51,6 @@ public class Controller extends API {
                 headers.get("accept-language")
             )
         );
-
         session.setLastUpdate(ZonedDateTime.now().toString());
 
         repository.save(session);
@@ -63,15 +66,15 @@ public class Controller extends API {
      */
     @GetMapping("/")
     @JsonView(View.Default.class)
-    public Model read(
-          @RequestHeader Map<String, String> headers,
-          @RequestParam(value = "id") String id
+    public @Valid Model read(
+        @RequestHeader @Valid Map<@NotEmpty String, @NotEmpty String> headers,
+        @Valid Id id
     ) throws Exception {
 
         this.authenticate(headers.getOrDefault("api-key", ""));
 
-        Optional<Model> session = repository.findById(id);
-        if(session.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "entity not found");
+        Optional<Model> session = repository.findById(id.getId());
+        if(session.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "entity not found" + id.getId());
 
         this.authorize(
             session.get(),
@@ -90,17 +93,17 @@ public class Controller extends API {
      * @param body The session values to update
      * @return The updated session object
      */
-    @PatchMapping("/")
+    @PutMapping("/")
     @JsonView(View.Default.class)
-    public Model update(
-       @RequestHeader Map<String, String> headers,
-       @RequestParam(value = "id") String id,
-       @RequestBody Map<String, String> body
+    public @Valid Model update(
+        @RequestHeader @Valid Map<@NotEmpty String, @NotEmpty String> headers,
+        @Valid Id id,
+        @RequestBody @Valid Map<@NotEmpty String, @NotEmpty String> body
     ) throws Exception {
 
         this.authenticate(headers.getOrDefault("api-key", ""));
 
-        Optional<Model> session = repository.findById(id);
+        Optional<Model> session = repository.findById(id.getId());
         if(session.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "entity not found");
 
         this.authorize(
@@ -122,20 +125,20 @@ public class Controller extends API {
      */
     @DeleteMapping("/")
     public void delete(
-        @RequestHeader Map<String, String> headers,
-        @RequestParam(value = "id") String id
+        @RequestHeader @Valid Map<@NotEmpty String, @NotEmpty String> headers,
+        @Valid Id id
     ) throws Exception {
 
         this.authenticate(headers.getOrDefault("api-key", ""));
 
-        Optional<Model> session = repository.findById(id);
+        Optional<Model> session = repository.findById(id.getId());
         if(session.isPresent()) {
             this.authorize(
                 session.get(),
                 headers
             );
 
-            this.repository.deleteById(id);
+            this.repository.deleteById(id.getId());
         }
     }
 }

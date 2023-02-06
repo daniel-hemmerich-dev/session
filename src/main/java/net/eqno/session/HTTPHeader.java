@@ -3,12 +3,11 @@ package net.eqno.session;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HexFormat;
-import java.util.UUID;
 
 /**
  *
  */
-public class Util {
+public class HTTPHeader {
     /**
      *
      * @param host The host header e.g. "localhost:8080"
@@ -21,7 +20,7 @@ public class Util {
      * @param acceptLanguage The accept language HTTP header value
      * @return The MD5 hash of the provided HTTP headers
      */
-    public static String generateHTTPHeaderHash(
+    public static String generateHash(
             String host,
             String connection,
             String pragma,
@@ -43,14 +42,5 @@ public class Util {
         MessageDigest messageDigest = MessageDigest.getInstance("MD5");
         messageDigest.update(input.getBytes());
         return HexFormat.of().formatHex(messageDigest.digest());
-    }
-
-    /**
-     *
-     * @return The generated CSRF token
-     */
-    public static String generateCSRFToken() {
-        UUID uuid = UUID.randomUUID();
-        return uuid.toString();
     }
 }

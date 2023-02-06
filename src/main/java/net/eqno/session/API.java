@@ -2,10 +2,13 @@ package net.eqno.session;
 
 import jakarta.security.auth.message.AuthException;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.validation.annotation.Validated;
+
 import java.security.NoSuchAlgorithmException;
 import java.util.Map;
 
 @ConfigurationProperties(prefix = "api")
+@Validated
 public class API {
     private String key;
 
@@ -35,7 +38,7 @@ public class API {
         Model session,
         Map<String, String> headers
     ) throws AuthException, NoSuchAlgorithmException {
-        String httpHeaderHash = Util.generateHTTPHeaderHash(
+        String httpHeaderHash = HTTPHeader.generateHash(
                 headers.get("host"),
                 headers.get("connection"),
                 headers.get("pragma"),
