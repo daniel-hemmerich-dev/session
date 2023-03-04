@@ -30,3 +30,7 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### AWS ###
+.elasticbeanstalk
+bin/ebcli-virtual-env
