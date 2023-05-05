@@ -1,0 +1,144 @@
+openapi: 3.1.0
+info:
+  title: Session API
+  description: The API specification of the session micro service.
+  version: 1.0.0
+tags:
+  - name: Session
+servers:
+  - url: localhost:8080
+    description: Local Server.
+paths:
+  /:
+    post:
+      summary: Create a session
+      description: Create a session based on the http headers.
+      tags:
+        - name: Session
+      operationId: create-session
+      responses:
+        "201":
+          description: A new session was created.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/session"
+        "400":
+          description: One of the request parameter is not valid.
+          content:
+            text/html:
+              example: Illegal locale.
+        "403":
+          description: Wrong API credentials provided.
+          content:
+            text/html:
+  /{id}:
+    parameters:
+      - $ref: "#/components/parameters/id"
+    put:
+      summary: Update a session
+      description: Update a session based on the id.
+      tags:
+        - name: Session
+      operationId: update-session
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/session"
+      responses:
+        "200":
+          description: A session was updated.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/session"
+        "400":
+          description: One of the request parameter is not valid.
+          content:
+            text/html:
+              example: Illegal locale.
+        "403":
+          description: Wrong API credentials provided.
+          content:
+            text/html:
+    get:
+      summary: Read a session
+      description: Read a session based on the id.
+      tags:
+        - name: Session
+      operationId: read-session
+      responses:
+        "200":
+          description: A session was returned.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/session"
+        "400":
+          description: One of the request parameter is not valid.
+          content:
+            text/html:
+              example: Illegal locale.
+        "403":
+          description: Wrong API credentials provided.
+          content:
+            text/html:
+    delete:
+      summary: Delete a session
+      description: Delete a session based on the id.
+      tags:
+        - name: Session
+      operationId: delete-session
+      responses:
+        "204":
+          description: A session was deleted.
+          content:
+            text/plain:
+        "400":
+          description: One of the request parameter is not valid.
+          content:
+            text/html:
+              example: Illegal locale.
+        "403":
+          description: Wrong API credentials provided.
+          content:
+            text/html:
+
+components:
+  parameters:
+    id:
+      description: The id of a session
+      in: path
+      required: true
+      schema:
+        $ref: "#/components/schemas/id"
+  schemas:
+    id:
+      type: string
+      minLength: 24
+      maxLength: 24
+      description: Identifier of the session.
+    csrfToken:
+      type: string
+      minLength: 36
+      maxLength: 36
+      description: The CSRF token of the session.
+    values:
+      type: string
+      description: The values of the session. Can be any valid json.
+    lastUpdate:
+      type: string
+      description: The last update date of the session.
+    session:
+      type: object
+      properties:
+        id:
+          $ref: "#/components/schemas/id"
+        csrfToken:
+          $ref: "#/components/schemas/csrfToken"
+        values:
+          $ref: "#/components/schemas/values"
+        lastUpdate:
+          $ref: "#/components/schemas/lastUpdate"

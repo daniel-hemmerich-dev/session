@@ -1,0 +1,5 @@
+version: 1
+cron:
+  - name: "schedule"
+    url: "/cleanup?api-key=YOUR_API_KEY"
+    schedule: "0 0 * * *"

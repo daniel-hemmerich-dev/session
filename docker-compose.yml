@@ -1,0 +1,53 @@
+version: '3'
+services:
+  session-db:
+    image: "mongo:6.0.5"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${DB_USER}
+      - MONGO_INITDB_ROOT_PASSWORD=${DB_PASSWORD}
+      - MONGO_INITDB_DATABASE=${DB_NAME}
+    ports:
+      - "${DB_PORT}:${DB_PORT}"
+    volumes:
+      - session_data:/data/db
+    networks:
+      session-network:
+  mongo-express:
+    image: mongo-express
+    environment:
+      - ME_CONFIG_MONGODB_ADMINUSERNAME=${DB_USER}
+      - ME_CONFIG_MONGODB_ADMINPASSWORD=${DB_PASSWORD}
+      - ME_CONFIG_MONGODB_URL=mongodb://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/
+    ports:
+      - ${MONGO_EXPRESS_PORT}:${MONGO_EXPRESS_PORT}
+    expose:
+      - ${MONGO_EXPRESS_PORT}
+    depends_on:
+      - session-db
+    restart: on-failure
+    networks:
+      session-network:
+  session-api:
+    build: .
+    environment:
+      - APP_PORT=${APP_PORT}
+      - APP_DEBUG=${APP_DEBUG}
+      - API_KEY=${API_KEY}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
+    ports:
+      - "${APP_PORT}:${APP_PORT}"
+    expose:
+      - ${APP_PORT}
+    depends_on:
+      - session-db
+    restart: on-failure
+    networks:
+      session-network:
+volumes:
+  session_data:
+networks:
+  session-network:

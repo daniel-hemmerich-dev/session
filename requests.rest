@@ -1,0 +1,19 @@
+### Create a session.
+POST http://localhost:8080
+
+
+### Read a session
+GET http://localhost:8080/d1288fcc-d401-4dc6-b1ef-be7f9844a8c8
+
+
+### Update a session.
+PUT http://localhost:8080/d1288fcc-d401-4dc6-b1ef-be7f9844a8c8
+Content-Type: application/json
+
+{
+    "value": "This is an updated test"
+}
+
+
+### Delete a session.
+DELETE http://localhost:8080/d1288fcc-d401-4dc6-b1ef-be7f9844a8c8
